@@ -88,3 +88,40 @@ def print_agents():
     print("\nConnected Agents:")
     for i, agent in enumerate(AGENTS):
         print(f"{i + 1}. ID: {agent['id']}, Address: {agent['address']}")
+
+def send_command_to_agent(agent, command):
+    """Send a command to the selected agent."""
+    agent_url = f"http://{agent['address']}:5001/command"  # Assuming agent runs on port 5001
+    try:
+        if command == "send_file":
+            print("Waiting to receive file address from the agent...")
+            response = requests.post(agent_url, json={"command": command})
+            if response.status_code == 200:
+                file_address = response.json().get("file_address")
+                if file_address:
+                    print(f"Received file address: {file_address}")
+                    # Now request the file from the agent
+                    print("Requesting the file from the agent...")
+                    file_response = requests.get(f"http://{agent['address']}:5001/download_file?file_address={file_address}", stream=True)
+                    if file_response.status_code == 200:
+                        file_name = file_address.split("/")[-1]  # Extract file name from the address
+                        with open(file_name, "wb") as f:
+                            for chunk in file_response.iter_content(chunk_size=1024):
+                                if chunk:
+                                    f.write(chunk)
+                        print(f"File '{file_name}' received successfully.")
+                    else:
+                        print("Failed to download the file.")
+                else:
+                    print("No file address received from the agent.")
+            else:
+                print("Failed to receive file address from the agent.")
+        else:
+            response = requests.post(agent_url, json={"command": command})
+            if response.status_code == 200:
+                print(f"Response from {agent['id']}: {response.json()}")
+            else:
+                print(f"Failed to send command to {agent['id']}")
+    except Exception as e:
+        print(f"Error communicating with {agent['id']}: {e}")
+
