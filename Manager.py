@@ -82,3 +82,9 @@ def upload_file():
 def list_agents():
     """Endpoint for listing all connected agents."""
     return jsonify({"agents": AGENTS}), 200
+
+def print_agents():
+    """Print the list of connected agents."""
+    print("\nConnected Agents:")
+    for i, agent in enumerate(AGENTS):
+        print(f"{i + 1}. ID: {agent['id']}, Address: {agent['address']}")
