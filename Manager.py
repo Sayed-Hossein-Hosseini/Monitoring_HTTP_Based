@@ -173,3 +173,7 @@ def start_manager():
     # Start the command interface in a separate thread
     threading.Thread(target=command_interface, daemon=True).start()
     app.run(host="0.0.0.0", port=5000)
+
+
+if __name__ == "__main__":
+    start_manager()
