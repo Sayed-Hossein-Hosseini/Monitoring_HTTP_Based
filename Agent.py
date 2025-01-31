@@ -78,3 +78,13 @@ def get_system_logs():
             except Exception as e:
                 return f"Error retrieving Linux logs: {e}"
         return "System log file not found."
+
+def restart_system():
+    """Restart the agent's system."""
+    try:
+        if os.name == "nt":  # Windows
+            os.system("shutdown -r -t 0")
+        else:  # Linux/macOS
+            os.system("sudo reboot")
+    except Exception as e:
+        print(f"Error restarting system: {e}")
