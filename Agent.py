@@ -128,3 +128,28 @@ def download_file():
         return send_file(file_address, as_attachment=True)
     else:
         return jsonify({"error": "File not found"}), 404
+
+def start_agent():
+    """Start the agent REST API server."""
+    global MANAGER_IP
+    MANAGER_IP = get_manager_ip()  # Get Manager IP from the user
+    print(f"Connecting to Manager at {MANAGER_IP}...")
+
+    # Notify Manager about the connection
+    try:
+        response = requests.post(
+            f"http://{MANAGER_IP}:5000/register",
+            json={"agent_id": AGENT_ID, "address": "127.0.0.1"}  # Replace with actual IP if needed
+        )
+        if response.status_code == 200:
+            print("Successfully connected to Manager.")
+        else:
+            print("Failed to connect to Manager.")
+    except Exception as e:
+        print(f"Error connecting to Manager: {e}")
+
+    # Start the system status sender in a separate thread
+    threading.Thread(target=send_system_status, daemon=True).start()
+
+    # Start the Flask server to handle commands from the manager
+    app.run(host="0.0.0.0", port=5001)
