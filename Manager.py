@@ -125,3 +125,44 @@ def send_command_to_agent(agent, command):
     except Exception as e:
         print(f"Error communicating with {agent['id']}: {e}")
 
+def command_interface():
+    """Command line interface for sending commands to agents."""
+    while True:
+        print_agents()
+        try:
+            selected_agent = int(input("Select an agent by number or enter 0 to exit: ")) - 1
+            if selected_agent == -1:
+                print("Exiting...")
+                break
+            if 0 <= selected_agent < len(AGENTS):
+                agent = AGENTS[selected_agent]
+                while True:
+                    print("\nAvailable Commands:")
+                    print("1. Get_Status")
+                    print("2. Get_Process_Count")
+                    print("3. Get_Logs")
+                    print("4. Get_File")
+                    print("5. Restart")
+                    print("6. Back to Agent List")
+                    command_number = input("Enter command number: ").strip()
+                    commands = {
+                        "1": "get_status",
+                        "2": "get_process_count",
+                        "3": "get_logs",
+                        "4": "send_file",
+                        "5": "restart",
+                        "6": "back"
+                    }
+                    if command_number in commands:
+                        command = commands[command_number]
+                        if command == "back":
+                            break
+                        send_command_to_agent(agent, command)
+                        # Wait for the user to press Enter before showing the command list again
+                        input("\nPress Enter to continue...\n")
+                    else:
+                        print("Invalid command number. Try again.")
+            else:
+                print("Invalid selection. Try again.")
+        except ValueError:
+            print("Invalid input. Please enter a valid number.")
