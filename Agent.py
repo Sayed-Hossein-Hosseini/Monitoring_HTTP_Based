@@ -119,3 +119,12 @@ def handle_command():
             return jsonify({"error": "File not found"}), 404
     else:
         return jsonify({"error": "Unknown command"}), 400
+
+@app.route('/download_file', methods=['GET'])
+def download_file():
+    """Endpoint for downloading a file."""
+    file_address = request.args.get("file_address")
+    if file_address and os.path.exists(file_address):
+        return send_file(file_address, as_attachment=True)
+    else:
+        return jsonify({"error": "File not found"}), 404
