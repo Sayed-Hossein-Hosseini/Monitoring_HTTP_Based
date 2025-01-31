@@ -61,3 +61,19 @@ def alert():
 
     print(f"Received alert from {agent_id}: {data}")
     return jsonify({"message": "Alert received"}), 200
+
+@app.route('/upload_file', methods=['POST'])
+def upload_file():
+    """Endpoint for receiving files from agents."""
+    agent_ip = request.remote_addr
+
+    if agent_ip not in AUTHORIZED_AGENTS:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    if 'file' not in request.files:
+        return jsonify({"error": "No file provided"}), 400
+
+    file = request.files['file']
+    file.save(file.filename)
+    print(f"File '{file.filename}' received from {agent_ip}.")
+    return jsonify({"message": "File received successfully"}), 200
