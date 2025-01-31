@@ -166,3 +166,10 @@ def command_interface():
                 print("Invalid selection. Try again.")
         except ValueError:
             print("Invalid input. Please enter a valid number.")
+
+def start_manager():
+    """Start the manager REST API server."""
+    print("Starting Manager REST API server...")
+    # Start the command interface in a separate thread
+    threading.Thread(target=command_interface, daemon=True).start()
+    app.run(host="0.0.0.0", port=5000)
