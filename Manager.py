@@ -48,3 +48,16 @@ def status():
     # Print the received status
     print(f"Received status from {agent_id}: {data}")
     return jsonify({"message": "Status received"}), 200
+
+@app.route('/alert', methods=['POST'])
+def alert():
+    """Endpoint for receiving alerts from agents."""
+    data = request.json
+    agent_id = data.get("agent_id")
+    agent_ip = request.remote_addr
+
+    if agent_ip not in AUTHORIZED_AGENTS:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    print(f"Received alert from {agent_id}: {data}")
+    return jsonify({"message": "Alert received"}), 200
