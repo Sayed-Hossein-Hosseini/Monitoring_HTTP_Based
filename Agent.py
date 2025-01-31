@@ -56,3 +56,25 @@ def send_system_status():
                 print(f"Error sending system status: {e}")
 
         time.sleep(1)  # Check flag every second
+
+def get_system_logs():
+    """Retrieve system logs with proper permissions."""
+    if os.name == "nt":  # Windows
+        try:
+            result = subprocess.run(
+                ["wevtutil", "qe", "Application", "/c:10", "/rd:true", "/f:text"],
+                capture_output=True, text=True, check=True
+            )
+            return result.stdout if result.stdout else "No logs available"
+        except Exception as e:
+            return f"Error retrieving Windows logs: {e}"
+    else:  # Linux/macOS
+        log_file = "/var/log/syslog" if os.path.exists("/var/log/syslog") else None
+        if log_file:
+            try:
+                with open(log_file, "r", errors="ignore") as f:
+                    logs = f.readlines()[-10:]
+                return "\n".join(logs) if logs else "No logs available"
+            except Exception as e:
+                return f"Error retrieving Linux logs: {e}"
+        return "System log file not found."
