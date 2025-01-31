@@ -77,3 +77,8 @@ def upload_file():
     file.save(file.filename)
     print(f"File '{file.filename}' received from {agent_ip}.")
     return jsonify({"message": "File received successfully"}), 200
+
+@app.route('/agents', methods=['GET'])
+def list_agents():
+    """Endpoint for listing all connected agents."""
+    return jsonify({"agents": AGENTS}), 200
