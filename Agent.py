@@ -88,3 +88,34 @@ def restart_system():
             os.system("sudo reboot")
     except Exception as e:
         print(f"Error restarting system: {e}")
+
+@app.route('/command', methods=['POST'])
+def handle_command():
+    """Endpoint for handling commands from the manager."""
+    global SEND_DATA
+    data = request.json
+    command = data.get("command")
+
+    if not command:
+        return jsonify({"error": "Missing command"}), 400
+
+    if command == "get_status":
+        SEND_DATA = True  # Enable sending data
+        return jsonify({"message": "Sending system status..."}), 200
+    elif command == "get_process_count":
+        process_count = len(psutil.pids())
+        return jsonify({"process_count": process_count}), 200
+    elif command == "get_logs":
+        logs = get_system_logs()
+        return jsonify({"logs": logs}), 200
+    elif command == "restart":
+        restart_system()
+        return jsonify({"message": "Restarting system..."}), 200
+    elif command == "send_file":
+        file_address = input("Enter the file path to send: ").strip()
+        if os.path.exists(file_address):
+            return jsonify({"file_address": file_address}), 200
+        else:
+            return jsonify({"error": "File not found"}), 404
+    else:
+        return jsonify({"error": "Unknown command"}), 400
