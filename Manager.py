@@ -26,6 +26,7 @@ def register():
 
     return jsonify({"message": "Agent registered successfully"}), 200
 
+
 @app.route('/status', methods=['POST'])
 def status():
     """Endpoint for receiving system status from agents."""
@@ -49,6 +50,7 @@ def status():
     print(f"Received status from {agent_id}: {data}")
     return jsonify({"message": "Status received"}), 200
 
+
 @app.route('/alert', methods=['POST'])
 def alert():
     """Endpoint for receiving alerts from agents."""
@@ -59,8 +61,10 @@ def alert():
     if agent_ip not in AUTHORIZED_AGENTS:
         return jsonify({"error": "Unauthorized"}), 403
 
-    print(f"Received alert from {agent_id}: {data}")
+    message = data.get("message")
+    print(f"Received alert from {agent_id}: {message}")  # Print the alert message
     return jsonify({"message": "Alert received"}), 200
+
 
 @app.route('/upload_file', methods=['POST'])
 def upload_file():
@@ -78,16 +82,19 @@ def upload_file():
     print(f"File '{file.filename}' received from {agent_ip}.")
     return jsonify({"message": "File received successfully"}), 200
 
+
 @app.route('/agents', methods=['GET'])
 def list_agents():
     """Endpoint for listing all connected agents."""
     return jsonify({"agents": AGENTS}), 200
+
 
 def print_agents():
     """Print the list of connected agents."""
     print("\nConnected Agents:")
     for i, agent in enumerate(AGENTS):
         print(f"{i + 1}. ID: {agent['id']}, Address: {agent['address']}")
+
 
 def send_command_to_agent(agent, command):
     """Send a command to the selected agent."""
@@ -124,6 +131,7 @@ def send_command_to_agent(agent, command):
                 print(f"Failed to send command to {agent['id']}")
     except Exception as e:
         print(f"Error communicating with {agent['id']}: {e}")
+
 
 def command_interface():
     """Command line interface for sending commands to agents."""
@@ -166,6 +174,7 @@ def command_interface():
                 print("Invalid selection. Try again.")
         except ValueError:
             print("Invalid input. Please enter a valid number.")
+
 
 def start_manager():
     """Start the manager REST API server."""
